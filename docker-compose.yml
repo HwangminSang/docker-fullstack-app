@@ -1,0 +1,53 @@
+version: '3'
+#각각의 도커컨테이너를 하나의 컨테이너에서 모아 실행되게 
+services:
+  frontend:
+  #개발 환경을 위한 도커파일이 어딨는지 알려준다
+    build:
+      dockerfile: Dockerfile.dev
+      context : ./frontend
+     #코드를 수정 후 다시 이미지를 build 하는것 없이 수정된 코드가 반영이 될 수 있게 volume을 이용 
+    volumes:
+    #워킹 디렉토리
+      - /app/node_modules
+      - ./frontend:/app
+      #리엑트 앱을 종료할때 나오는 버그를 잡아준다
+    stdin_open : true 
+  #입구 프록시 역할
+  nginx:
+  #재시작 정책 
+    restart : always 
+    build: 
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports :
+      - "3000:80"
+  backend:
+   #개발 환경을 위한 도커파일이 어딨는지 알려준다
+    build:
+      dockerfile: Dockerfile.dev
+      context : ./backend
+    container_name: app_backend
+     #코드를 수정 후 다시 이미지를 build 하는것 없이 수정된 코드가 반영이 될 수 있게 volume을 이용 
+    volumes:
+    #워킹 디렉토리
+      - /app/node_modules
+      - ./backend:/app
+      #리엑트 앱을 종료할때 나오는 버그를 잡아준다
+
+   #로컬환경에서는 테이블이 필요하기때문에 주석해제 , rds운영할때는 주석
+  # mysql:
+  #   build : ./mysql
+  #   restart : unless-stopped
+  #   container_name: app_mysql
+  #   ports : 
+  #     - "3306:3306"
+  #   # 데이터 베이스의 저장된 자료를 컨테이너를 지우더라도 자료가 지워지지 않을수 있게 해주기 위한 불륨
+  #   #컨테이너 안에 저장 x  호스트 파일 시스템에 저장  도커 Area에 저장 < 그래서 컨테이너 삭제해도 데이터는 사라지지않는다
+  #   volumes:
+  #     - ./mysql/mysql_data:/var/lib/mysql
+  #     - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+  # #환경변수 셋팅
+  #   environment:
+  #      MYSQL_ROOT_PASSWORDl : 1234
+  #      MYSQL_DATABASE : myApp
