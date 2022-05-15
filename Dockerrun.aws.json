@@ -1,0 +1,39 @@
+// Container defination 작성
+
+{
+    "AWSEBDockerrunVersion" : 2 ,
+    // 여러개이기때문에 배열
+    "containerDefinitions" : [
+        //객체 하나 컨테이너하나
+        {
+            "name" : "frontend",
+            "image" : "alstkd1q1q/docker-frontend",  //사용할  이미지 도커허브에서
+            "hostname" : "fronend", //다른 컨테이너에서 접근할때 사용할 이름
+            "essential" : false, // false 일경우 해당 컨테이너가 멈춰도 다른 컨테이너는 계속 실행
+            "memory" : 128 //메모리
+        },
+
+        {
+            "name" : "backend",
+            "image" : "alstkd1q1q/docker-bakcend",
+            "hostname" : "backend",
+            "essential" : false,
+            "memory" : 128
+        },
+
+        {
+            "name" : "nginx",
+            "image" : "alstkd1q1q/docker-nginx",
+            "hostname" : "nginx",
+            "essential" : true,  // 해당 컨테이너가 죽으면 요청이 안가기때문에 이렇게
+            "portMappings" : [ //포트맵핑
+                {
+                    "hostPort" : 80,
+                    "containerPort" : 80
+                }
+            ],
+            "links" : ["frontend","backend"],  // nginx와 연결된 컨테이너 설정. < 약간 apigateway 같으는낌
+            "memory" : 128
+        }
+    ]
+}

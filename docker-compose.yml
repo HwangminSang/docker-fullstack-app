@@ -33,7 +33,17 @@ services:
     #워킹 디렉토리
       - /app/node_modules
       - ./backend:/app
-      #리엑트 앱을 종료할때 나오는 버그를 잡아준다
+    
+    #환경 변수 사용
+    environment:
+      - MYSQL_HOST: mysql
+      - MYSQL_USER: root
+      - MYSQL_ROOT_PASSWORDl : 1234
+      - MYSQL_DATABASE : myApp
+      - MYSQL_PORT : 3306
+
+
+
 
    #로컬환경에서는 테이블이 필요하기때문에 주석해제 , rds운영할때는 주석
   # mysql:

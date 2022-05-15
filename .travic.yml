@@ -34,3 +34,18 @@ after_success:
 - docker push alstkd1q1q/docker-frontend
 - docker push alstkd1q1q/docker-backend
 - docker push alstkd1q1q/nginx
+
+
+#배포
+deploy:
+  provider : elasticbeanstalk #제공자 우리는 aws에 eb 사용 
+  region : :ap-northeast-2" #서울서버 주소
+  app: "docker-fullstack-app"  #에플리케이션이름
+  env: "DockerFullstackApp-env" #환경이름 
+  bucket_name: elasticbeanstal-ap-northeast-2-972153559337  # s3의 버켓이름 . eb에 바로 배포가 아니라 먼저 s3 스토리지에 파일을 저장하고 배포
+  bucket_path : "docker-fullstack-app" #app이름과 같다.
+  on : #어떤 브랜치에 push 되었을때 deploy 되는지 
+    branch: master 
+  #aws 접근 키 < travis 해당 계정에 환경변수로 설정을 해두었다.
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key : $AWS_SECRET_ACCESS_KEY
