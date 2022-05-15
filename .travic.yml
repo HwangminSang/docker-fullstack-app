@@ -1,0 +1,36 @@
+#언어
+language: generic
+
+#수도 권한주기
+sudo: required
+
+#도커환경 만들어주기
+services:
+  - docker
+
+#도커파일을 이용하여 이미지를 생성
+#  -t alstkd1q1q/react-test-app 해당 이름으로 
+# 테스트파일 수행하기 위해 -f ./frontend/Dockerfile.dev ./frontend
+before_install:
+  - docker build -t alstkd1q1q/react-test-app -f ./frontend/Dockerfile.dev ./frontend
+
+#이미지를 컨테이너로 만든다. CI=true , 이미지이름 명령어
+script:
+  - docker run -e CI=true alstkd1q1q/react-test-app npm run test
+
+
+#테스트 성공후
+#이미 도커파일이 있기때문에 도커 해당 경로만 넣어주면된다. 
+#각각의 이미지를 빌드
+after_success:
+  - docker build -t alstkd1q1q/docker-frontend ./forntend
+  - docker build -t alstkd1q1q/docker-backend ./backend
+  - docker build -t alstkd1q1q/nginx ./nginx
+
+#도커허브에 로그인
+-echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
+
+#도커허브에 빌드된 이미지를 업로드
+- docker push alstkd1q1q/docker-frontend
+- docker push alstkd1q1q/docker-backend
+- docker push alstkd1q1q/nginx
